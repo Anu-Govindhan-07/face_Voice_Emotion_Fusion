@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.DS_Store
+*.log
+*.wav
+*.mp4
+*.npy
+!identity_store/embeddings/.gitkeep
+!data/jobs/**/embeddings/**/.gitkeep
