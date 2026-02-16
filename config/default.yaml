@@ -1,0 +1,9 @@
+interval_seconds: 0.5
+identity:
+  match_threshold: 0.72
+  maybe_threshold: 0.58
+name_detection:
+  self_intro_confidence: 0.9
+  mention_confidence: 0.75
+speaker_face:
+  min_visibility_confidence: 0.25
