@@ -1,0 +1,19 @@
+{
+  "identities": [
+    {
+      "id": "0001",
+      "name": "Anu",
+      "embeddings": [
+        "identity_store/embeddings/anu_demo_job_track_001.npy"
+      ],
+      "created_at": "2026-02-16T10:09:48.361285+00:00",
+      "last_seen_at": "2026-02-16T10:09:48.361285+00:00",
+      "sources": [
+        {
+          "job_id": "demo_job",
+          "track_id": "track_001"
+        }
+      ]
+    }
+  ]
+}
