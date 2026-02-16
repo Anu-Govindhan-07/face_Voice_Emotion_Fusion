@@ -15,6 +15,7 @@ from src.names.name_extraction import extract_name_signals
 from src.names.speaker_face_map import map_speakers_to_faces
 from src.pipeline.artifacts import ensure_job_dirs, write_json
 from src.pipeline.job_context import JobContext
+from src.ui.build_ui_json import build_ui_payload
 
 
 def _load_config(path: str | Path = "config/default.yaml") -> dict:
@@ -139,4 +140,12 @@ def run_job(video_path: str, job_id: str, config_path: str | Path = "config/defa
         )
 
     write_json(ctx.output_dir / "final_track_summary.json", final_summary)
+    ui_payload = build_ui_payload(
+        face_tracks=tracks,
+        diarization=diarization,
+        emotions=emotions,
+        associations=associations,
+        final_summary=final_summary,
+    )
+    write_json(ctx.output_dir / "ui.json", ui_payload)
     return {"job_id": job_id, "outputs": str(ctx.output_dir)}

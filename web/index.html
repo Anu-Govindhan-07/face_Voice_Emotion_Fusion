@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FaceVoice Fusion</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg"></div>
+    <main class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>FACEVOICE FUSION</h1>
+          <p>Speaker diarization, face tracking, identity matching, and emotion cues</p>
+        </div>
+        <div class="controls">
+          <input id="videoFile" type="file" accept="video/*" />
+          <button id="analyzeBtn">Analyze</button>
+        </div>
+      </header>
+
+      <p class="status" id="status">Load a local `ui.json` file to preview results.</p>
+
+      <section class="grid">
+        <article class="panel video-panel">
+          <div class="chips">
+            <span class="chip cyan" id="faceCount">Face Tracks: 0</span>
+            <span class="chip amber" id="speakerCount">Speaker Segments: 0</span>
+          </div>
+          <div class="video-wrap">
+            <video id="player" controls></video>
+            <div id="overlay" class="overlay"></div>
+          </div>
+        </article>
+
+        <aside class="panel side-panel">
+          <section class="card">
+            <h3>PIPELINE SUMMARY</h3>
+            <ul id="summaryList"></ul>
+          </section>
+          <section class="card">
+            <h3>IDENTITIES & EMOTIONS</h3>
+            <ul id="identityList"></ul>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

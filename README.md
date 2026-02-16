@@ -10,7 +10,7 @@ This repository implements a full video workflow:
 6. **Name detection** (language-aware, multilingual-friendly rules)
 7. **Speaker ↔ face mapping**
 8. **Identity matching/enrollment** to persistent JSON + `.npy` embeddings store
-9. **Final track summary** for UI labeling
+9. **Final track summary** + `ui.json` payload for the dashboard
 
 > No SQL/DB is used. Persistent identity state is in `identity_store/identities.json` and `identity_store/embeddings/*.npy`.
 
@@ -22,14 +22,53 @@ This repository implements a full video workflow:
 - `src/audio/*`: diarization/transcription interfaces
 - `src/names/*`: language detection, name extraction, speaker-face mapping
 - `src/identity/*`: JSON store, matching, enrollment
-- `src/ui/labels.py`: UI label formatting
+- `src/ui/*`: label helpers and `ui.json` payload builder
+- `web/*`: dashboard UI (dark style matching the uploaded mock)
 - `tests/*`: unit tests for names, matching, mapping
 
-## Run
+## Run (Linux / macOS)
 
 ```bash
 python -m src.main --video /path/to/video.mp4 --job_id job_001
 ```
+
+## Run on Windows
+
+### PowerShell
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python -m src.main --video C:\videos\input.mp4 --job_id job_001
+```
+
+### CMD
+
+```cmd
+python -m venv .venv
+.\.venv\Scripts\activate.bat
+pip install -r requirements.txt
+python -m src.main --video C:\videos\input.mp4 --job_id job_001
+```
+
+## Dashboard UI (same style as requested)
+
+1. Run the pipeline first:
+   - `python -m src.main --video <video> --job_id <job_id>`
+2. Start static server from repo root:
+   - `python -m http.server 8080`
+3. Open:
+   - `http://localhost:8080/web/`
+4. In UI:
+   - Upload the video file in the top bar.
+   - Click **Analyze** and pick `data/jobs/<job_id>/outputs/ui.json`.
+
+The page renders:
+- top metrics chips (face tracks / speaker segments)
+- pipeline summary card
+- identities & emotions list
+- face boxes + labels over video playback (from `face_tracks.json` + `final_track_summary.json` content embedded in `ui.json`)
 
 ## Output Artifacts
 
@@ -42,6 +81,7 @@ Outputs are written to:
 - `data/jobs/<job_id>/outputs/name_signals.json`
 - `data/jobs/<job_id>/outputs/associations.json`
 - `data/jobs/<job_id>/outputs/final_track_summary.json`
+- `data/jobs/<job_id>/outputs/ui.json`
 - `data/jobs/<job_id>/embeddings/face/<track_id>.npy`
 
 ## Identity Store Design
