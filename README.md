@@ -62,7 +62,9 @@ python -m src.main --video C:\videos\input.mp4 --job_id job_001
    - `http://localhost:8080/web/`
 4. In UI:
    - Upload the video file in the top bar.
-   - Click **Analyze** and pick `data/jobs/<job_id>/outputs/ui.json`.
+   - Enter the same `job_id` you used in the pipeline run.
+   - Click **Analyze** (it loads `data/jobs/<job_id>/outputs/ui.json` directly in the same page, no popup).
+   - Optional: click **Load ui.json** to manually pick a JSON file.
 
 The page renders:
 - top metrics chips (face tracks / speaker segments)

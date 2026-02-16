@@ -16,11 +16,13 @@
         </div>
         <div class="controls">
           <input id="videoFile" type="file" accept="video/*" />
+          <input id="jobIdInput" type="text" placeholder="job_id (e.g. job_001)" />
           <button id="analyzeBtn">Analyze</button>
+          <button id="loadJsonBtn" class="ghost">Load ui.json</button>
         </div>
       </header>
 
-      <p class="status" id="status">Load a local `ui.json` file to preview results.</p>
+      <p class="status" id="status">Upload video, enter job_id, then click Analyze (no popup).</p>
 
       <section class="grid">
         <article class="panel video-panel">

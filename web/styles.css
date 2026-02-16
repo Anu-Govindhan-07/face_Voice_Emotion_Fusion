@@ -21,7 +21,9 @@ body {
 .topbar h1 { margin:0; letter-spacing:1px; font-size: 48px; }
 .topbar p { margin:6px 0 0; color: var(--muted); font-size: 30px; }
 .controls { display:flex; gap:10px; background:#060a15; border:1px solid var(--line); border-radius:18px; padding:12px; }
-#analyzeBtn { background:transparent; color:var(--text); border:1px solid #007b98; border-radius:14px; padding:10px 20px; cursor:pointer; }
+#analyzeBtn, .ghost { background:transparent; color:var(--text); border:1px solid #007b98; border-radius:14px; padding:10px 20px; cursor:pointer; }
+#jobIdInput { background:#091121; color:var(--text); border:1px solid var(--line); border-radius:12px; padding:10px 12px; min-width: 210px; }
+.ghost { border-color: #3a4d72; }
 .status { color:#66d9ff; margin: 12px 0 18px; }
 .grid { display:grid; grid-template-columns: 1fr 420px; gap:22px; }
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 24px; padding: 18px; }

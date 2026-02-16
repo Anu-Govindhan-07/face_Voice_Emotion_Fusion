@@ -5,6 +5,7 @@ const speakerCount = document.getElementById('speakerCount');
 const summaryList = document.getElementById('summaryList');
 const identityList = document.getElementById('identityList');
 const statusLabel = document.getElementById('status');
+const jobIdInput = document.getElementById('jobIdInput');
 
 let frameTracks = [];
 let emotionSamplesByTrack = {};
@@ -26,9 +27,7 @@ function findNearestSample(samples = [], currentTime, maxGap = 1.0) {
 
 function trackInfoMap(ui) {
   const map = {};
-  for (const t of ui.tracks || []) {
-    map[t.track_id] = t;
-  }
+  for (const t of ui.tracks || []) map[t.track_id] = t;
   return map;
 }
 
@@ -50,7 +49,7 @@ function applyUiData(ui) {
     };
   });
 
-  statusLabel.textContent = 'Loaded ui.json successfully.';
+  statusLabel.textContent = 'Analysis loaded successfully.';
   drawBoxes();
 }
 
@@ -63,7 +62,6 @@ function renderSummary(summary) {
     ['Emotion tracks', summary.emotion_tracks || 0],
     ['Associations', summary.associations || 0],
   ];
-
   for (const [label, val] of items) {
     const li = document.createElement('li');
     li.className = 'metric';
@@ -84,8 +82,7 @@ function renderIdentities(tracks = []) {
 function currentBoxes(currentTime) {
   return frameTracks
     .map((track) => {
-      const bboxes = track.bboxes || [];
-      const nearestBox = findNearestSample(bboxes, currentTime, 1.0);
+      const nearestBox = findNearestSample(track.bboxes || [], currentTime, 1.0);
       if (!nearestBox) return null;
 
       const emotionTimeline = emotionSamplesByTrack[track.track_id] || [];
@@ -93,8 +90,7 @@ function currentBoxes(currentTime) {
       const emotion = emotionAtTime?.emotion || 'neutral';
       const confidence = Math.round((emotionAtTime?.confidence || 0) * 100);
       const label = `${track.resolved_name} ${emotion} (${confidence}%)`;
-
-      return { track_id: track.track_id, bbox: nearestBox.bbox, label };
+      return { bbox: nearestBox.bbox, label };
     })
     .filter(Boolean);
 }
@@ -102,7 +98,6 @@ function currentBoxes(currentTime) {
 function drawBoxes() {
   const boxes = currentBoxes(player.currentTime || 0);
   overlay.innerHTML = '';
-
   const vw = player.clientWidth || 1;
   const vh = player.clientHeight || 1;
   const sourceW = player.videoWidth || 1280;
@@ -121,23 +116,44 @@ function drawBoxes() {
   });
 }
 
+async function fetchUiByJobId(jobId) {
+  const url = `/data/jobs/${encodeURIComponent(jobId)}/outputs/ui.json`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Could not load ${url} (HTTP ${res.status})`);
+  return res.json();
+}
+
+async function loadUiJsonFile(file) {
+  const text = await file.text();
+  applyUiData(JSON.parse(text));
+}
+
 player.addEventListener('timeupdate', drawBoxes);
 player.addEventListener('loadedmetadata', drawBoxes);
 window.addEventListener('resize', drawBoxes);
 
-async function loadUiJson(file) {
-  const text = await file.text();
-  const ui = JSON.parse(text);
-  applyUiData(ui);
-}
-
 document.getElementById('analyzeBtn').addEventListener('click', async () => {
+  const jobId = jobIdInput.value.trim();
+  if (!jobId) {
+    statusLabel.textContent = 'Enter a job_id first (example: job_001).';
+    return;
+  }
+  statusLabel.textContent = `Analyzing using job_id=${jobId} ...`;
+  try {
+    const ui = await fetchUiByJobId(jobId);
+    applyUiData(ui);
+  } catch (err) {
+    statusLabel.textContent = `${err}. Run: python -m src.main --video <path> --job_id ${jobId}`;
+  }
+});
+
+document.getElementById('loadJsonBtn').addEventListener('click', () => {
   const fileInput = document.createElement('input');
   fileInput.type = 'file';
   fileInput.accept = '.json';
   fileInput.onchange = async () => {
     if (!fileInput.files?.[0]) return;
-    await loadUiJson(fileInput.files[0]);
+    await loadUiJsonFile(fileInput.files[0]);
   };
   fileInput.click();
 });
@@ -152,13 +168,18 @@ document.getElementById('videoFile').addEventListener('change', (e) => {
 (async function bootstrapFromQuery() {
   const params = new URLSearchParams(window.location.search);
   const uiUrl = params.get('ui');
-  if (!uiUrl) return;
+  const jobId = params.get('job_id');
+  if (jobId && !jobIdInput.value) jobIdInput.value = jobId;
+
   try {
-    const res = await fetch(uiUrl);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    applyUiData(data);
+    if (uiUrl) {
+      const res = await fetch(uiUrl);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      applyUiData(await res.json());
+    } else if (jobId) {
+      applyUiData(await fetchUiByJobId(jobId));
+    }
   } catch (e) {
-    statusLabel.textContent = `Failed to load ${uiUrl}: ${e}`;
+    statusLabel.textContent = `Auto-load failed: ${e}`;
   }
 })();
