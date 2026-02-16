@@ -68,7 +68,7 @@ The page renders:
 - top metrics chips (face tracks / speaker segments)
 - pipeline summary card
 - identities & emotions list
-- face boxes + labels over video playback (from `face_tracks.json` + `final_track_summary.json` content embedded in `ui.json`)
+- face boxes + labels over video playback with per-track emotion + confidence at current timestamp (from `face_tracks.json`, `emotions.json`, and `final_track_summary.json` embedded in `ui.json`)
 
 ## Output Artifacts
 

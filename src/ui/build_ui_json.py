@@ -9,6 +9,7 @@ def build_ui_payload(
     final_summary: list[dict],
 ) -> dict:
     matched = sum(1 for row in final_summary if row.get("recognized_identity", {}).get("status") == "matched")
+    emotion_by_track = {item.get("track_id"): item.get("samples", []) for item in emotions}
     return {
         "summary": {
             "face_tracks": len(face_tracks),
@@ -19,4 +20,5 @@ def build_ui_payload(
         },
         "face_tracks": face_tracks,
         "tracks": final_summary,
+        "emotion_samples": emotion_by_track,
     }
